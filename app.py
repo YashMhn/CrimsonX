@@ -1,61 +1,65 @@
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, render_template, request
 import tensorflow as tf
 import numpy as np
 from PIL import Image
-import io
 import os
-
-# Disable TensorFlow warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
-# Define blood groups
-blood_groups = {
-    0: "A+", 1: "AB-", 2: "A-", 3: "B+", 4: "B-", 5: "AB+", 6: "O-", 7: "O+"
-}
 
 # Initialize Flask app
 app = Flask(__name__)
 
-# Load model
-model = tf.keras.models.load_model('final.h5')
+# Load the TFLite model
+interpreter = tf.lite.Interpreter(model_path="final.tflite")
+interpreter.allocate_tensors()
 
-# Preprocess uploaded image
-def preprocess_image(img):
-    img = img.resize((64, 64))
-    img_array = np.array(img) / 255.0  # Normalize
-    img_array = np.expand_dims(img_array, axis=0)  # Add batch dimension
-    return img_array
+# Get input and output tensors
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
 
-# Homepage
-@app.route('/')
+# Define your class names (must match the training order)
+class_names = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']  # Example classes
+
+# Routes
+@app.route('/', methods=['GET'])
 def index():
     return render_template('index.html')
 
-# Prediction route
 @app.route('/predict', methods=['POST'])
 def predict():
     if 'image' not in request.files:
-        return jsonify({'error': 'No image uploaded'}), 400
+        return render_template('index.html', prediction="No file uploaded!")
 
     file = request.files['image']
 
     if file.filename == '':
-        return jsonify({'error': 'Empty filename'}), 400
+        return render_template('index.html', prediction="No selected file!")
 
-    try:
-        img = Image.open(io.BytesIO(file.read()))
-        img = img.convert('RGB')
-        img_array = preprocess_image(img)
+    if file:
+        try:
+            # Preprocess the image
+            img = Image.open(file.stream).convert('RGB')
+            img = img.resize((64, 64))  # Match training size
+            img = np.array(img, dtype=np.float32) / 255.0
+            img = np.expand_dims(img, axis=0)
 
-        predictions = model.predict(img_array)
-        predicted_class = np.argmax(predictions, axis=1)[0]
-        predicted_blood_group = blood_groups.get(predicted_class, "Unknown")
+            # Predict
+            interpreter.set_tensor(input_details[0]['index'], img)
+            interpreter.invoke()
+            output_data = interpreter.get_tensor(output_details[0]['index'])
 
-        return render_template('result.html', prediction=predicted_blood_group)
+            prediction_idx = np.argmax(output_data)
+            prediction_label = class_names[prediction_idx]
+            confidence = np.max(output_data) * 100  # Get highest probability
 
-    except Exception as e:
-        return jsonify({'error': f'Error during prediction: {str(e)}'}), 500
+            # Send both label and confidence to frontend
+            return render_template('index.html', 
+                                   prediction=prediction_label, 
+                                   confidence=f"{confidence:.2f}%")
 
-# Run locally
+        except Exception as e:
+            return render_template('index.html', prediction=f"Error: {str(e)}")
+
+    return render_template('index.html', prediction="Unknown error occurred!")
+
+# Run app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(debug=True)

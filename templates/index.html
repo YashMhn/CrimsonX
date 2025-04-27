@@ -1,20 +1,28 @@
-<!-- templates/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blood Group Prediction from Fingerprint</title>
+    <title>Fingerprint Blood Group Prediction</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Blood Group Prediction from Fingerprint</h1>
-        <form action="/predict" method="POST" enctype="multipart/form-data">
-            <label for="image">Upload Fingerprint Image</label>
-            <input type="file" id="image" name="image" accept="image/*" required>
-            <button type="submit">Predict Blood Group</button>
+        <h1 class="heading">🧬 Fingerprint Blood Group Prediction</h1>
+
+        <form action="/predict" method="post" enctype="multipart/form-data" class="form">
+            <input type="file" name="image" accept="image/*" required class="input-file">
+            <button type="submit" class="submit-btn">Predict</button>
         </form>
+
+        {% if prediction %}
+            <div class="result">
+                <h2>Prediction: {{ prediction }}</h2>
+                {% if confidence %}
+                    <h3>Confidence: {{ confidence }}</h3>
+                {% endif %}
+            </div>
+        {% endif %}
     </div>
 </body>
 </html>
