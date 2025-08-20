@@ -3,10 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fingerprint Blood Group Prediction</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Drug Inventory Tracking</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+    </style>
 </head>
-<body>
+<body class="text-gray-800">
+
+    <header class="bg-white border-b border-gray-200">
+        <div class="flex items-center justify-between p-4 md:p-8">
+            <div class="text-xl font-bold text-blue-900">Crimson X</div>
+            <button id="menu-button" class="block md:hidden text-blue-900 focus:outline-none">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+
     <div class="container">
         <h1 class="heading">🧬 Fingerprint Blood Group Prediction</h1>
 
