@@ -1,28 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fingerprint Blood Group Prediction</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
-    <div class="container">
-        <h1 class="heading">🧬 Fingerprint Blood Group Prediction</h1>
 
-        <form action="/predict" method="post" enctype="multipart/form-data" class="form">
-            <input type="file" name="image" accept="image/*" required class="input-file">
-            <button type="submit" class="submit-btn">Predict</button>
-        </form>
+<body class="bg-gray-50 font-sans antialiased">
 
-        {% if prediction %}
-            <div class="result">
-                <h2>Prediction: {{ prediction }}</h2>
+    <div class="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">
+        <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg">
+
+            <!-- Crimson X Logo -->
+            <div class="flex justify-center mb-6">
+                <img src="{{ url_for('static', filename='crimson_x_logo.png') }}" alt="Crimson X Logo" class="w-32 h-auto">
+            </div>
+
+            <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-6">🧬 Fingerprint Blood Group Prediction</h1>
+
+            <!-- Form -->
+            <form action="/predict" method="post" enctype="multipart/form-data" class="space-y-4">
+                <div class="flex justify-center">
+                    <input type="file" name="image" accept="image/*" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+                </div>
+                <div class="flex justify-center">
+                    <button type="submit" class="w-full py-3 px-6 bg-pink-500 text-white text-lg font-semibold rounded-lg hover:bg-pink-600 transition-colors">Predict</button>
+                </div>
+            </form>
+
+            <!-- Prediction Result -->
+            {% if prediction %}
+            <div class="mt-6 text-center">
+                <h2 class="text-2xl font-semibold text-gray-800">Prediction: {{ prediction }}</h2>
                 {% if confidence %}
-                    <h3>Confidence: {{ confidence }}</h3>
+                <h3 class="text-xl text-gray-600 mt-2">Confidence: {{ confidence }}%</h3>
                 {% endif %}
             </div>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
+
 </body>
+
 </html>
