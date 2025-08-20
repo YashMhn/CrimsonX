@@ -31,7 +31,3 @@ Once deployed, the application can be accessed via the public URL provided by Re
 ## License
 
 The model was created using https://www.kaggle.com/datasets/rajumavinmar/finger-print-based-blood-group-dataset , which has no license.
-
----
-
-This version focuses on the front-end aspect of the project, how users can interact with it, and how the CNN model integrates with the Render-hosted service. If there are specific details about the CNN model or prediction mechanism you'd like to add, feel free to expand the "Using the Application" section.
