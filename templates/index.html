@@ -52,20 +52,45 @@
                 <div class="upload-section">
                     <div class="file-input-wrapper">
                         <input type="file" name="image" accept="image/*" required class="file-input" id="imageInput">
-                        <label for="imageInput" class="file-input-label">
-                            <div class="upload-icon">
-                                <i class="fas fa-cloud-upload-alt"></i>
-                            </div>
-                            <div class="upload-text">
-                                <span class="upload-main-text">Choose fingerprint image</span>
-                                <span class="upload-sub-text">or drag and drop here</span>
+                        <label for="imageInput" class="file-input-label" id="fileLabel">
+                            <div class="upload-content">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <div class="upload-text">
+                                    <span class="upload-main-text">Choose fingerprint image</span>
+                                    <span class="upload-sub-text">or drag and drop here</span>
+                                </div>
                             </div>
                         </label>
+                        
+                        <!-- Image Preview -->
+                        <div class="image-preview-container" id="imagePreview" style="display: none;">
+                            <div class="image-preview-header">
+                                <span class="preview-title">
+                                    <i class="fas fa-image"></i>
+                                    Selected Image
+                                </span>
+                                <button type="button" class="remove-image-btn" id="removeImage">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                            <div class="image-preview-wrapper">
+                                <img id="previewImg" alt="Selected fingerprint" class="preview-image">
+                                <div class="image-overlay">
+                                    <div class="image-info" id="imageInfo">
+                                        <div class="image-name" id="imageName"></div>
+                                        <div class="image-size" id="imageSize"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="file-info" id="fileInfo"></div>
                     </div>
                 </div>
 
-                <button type="submit" class="predict-btn">
+                <button type="submit" class="predict-btn" id="predictBtn">
                     <span class="btn-text">
                         <i class="fas fa-dna"></i>
                         Analyze & Predict
@@ -113,24 +138,66 @@
     </div>
 
     <script>
-        // File input handling
+        // DOM elements
         const fileInput = document.getElementById('imageInput');
+        const fileLabel = document.getElementById('fileLabel');
         const fileInfo = document.getElementById('fileInfo');
         const form = document.querySelector('.upload-form');
-        const predictBtn = document.querySelector('.predict-btn');
+        const predictBtn = document.getElementById('predictBtn');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const imageName = document.getElementById('imageName');
+        const imageSize = document.getElementById('imageSize');
+        const removeImageBtn = document.getElementById('removeImage');
 
+        // File input handling
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (file) {
-                fileInfo.innerHTML = `
-                    <div class="selected-file">
-                        <i class="fas fa-image"></i>
-                        <span>${file.name}</span>
-                        <small>(${(file.size / 1024).toFixed(1)} KB)</small>
-                    </div>
-                `;
-                fileInfo.style.display = 'block';
+                handleFileSelection(file);
             }
+        });
+
+        // Handle file selection
+        function handleFileSelection(file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select a valid image file.');
+                return;
+            }
+
+            // Update file info
+            imageName.textContent = file.name;
+            imageSize.textContent = `${(file.size / 1024).toFixed(1)} KB`;
+
+            // Create file reader
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewImg.src = e.target.result;
+                
+                // Show preview and hide upload label
+                fileLabel.style.display = 'none';
+                imagePreview.style.display = 'block';
+                
+                // Add animation
+                imagePreview.style.opacity = '0';
+                imagePreview.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    imagePreview.style.transition = 'all 0.3s ease';
+                    imagePreview.style.opacity = '1';
+                    imagePreview.style.transform = 'translateY(0)';
+                }, 50);
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Remove image functionality
+        removeImageBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            imagePreview.style.display = 'none';
+            fileLabel.style.display = 'block';
+            previewImg.src = '';
         });
 
         // Form submission handling
@@ -139,10 +206,9 @@
         });
 
         // Drag and drop functionality
-        const fileInputLabel = document.querySelector('.file-input-label');
-
         ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-            fileInputLabel.addEventListener(eventName, preventDefaults, false);
+            fileLabel.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
         });
 
         function preventDefaults(e) {
@@ -151,31 +217,41 @@
         }
 
         ['dragenter', 'dragover'].forEach(eventName => {
-            fileInputLabel.addEventListener(eventName, highlight, false);
+            fileLabel.addEventListener(eventName, highlight, false);
         });
 
         ['dragleave', 'drop'].forEach(eventName => {
-            fileInputLabel.addEventListener(eventName, unhighlight, false);
+            fileLabel.addEventListener(eventName, unhighlight, false);
         });
 
         function highlight(e) {
-            fileInputLabel.classList.add('drag-over');
+            fileLabel.classList.add('drag-over');
         }
 
         function unhighlight(e) {
-            fileInputLabel.classList.remove('drag-over');
+            fileLabel.classList.remove('drag-over');
         }
 
-        fileInputLabel.addEventListener('drop', handleDrop, false);
+        fileLabel.addEventListener('drop', handleDrop, false);
 
         function handleDrop(e) {
             const dt = e.dataTransfer;
             const files = dt.files;
-            fileInput.files = files;
             
-            const event = new Event('change', { bubbles: true });
-            fileInput.dispatchEvent(event);
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileSelection(files[0]);
+            }
         }
+
+        // Prevent default drag behavior on the entire document
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', function(e) {
+            e.preventDefault();
+        });
     </script>
 </body>
 
