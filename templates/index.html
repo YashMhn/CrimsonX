@@ -5,44 +5,187 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fingerprint Blood Group Prediction</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
-<body class="bg-gray-50 font-sans antialiased">
+<body>
+    <!-- Background Elements -->
+    <div class="background">
+        <div class="gradient-orb orb-1"></div>
+        <div class="gradient-orb orb-2"></div>
+        <div class="gradient-orb orb-3"></div>
+        <div class="floating-particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+    </div>
 
-    <div class="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-500 via-pink-500 to-red-500">
-        <div class="bg-white p-8 rounded-xl shadow-xl w-full max-w-lg">
-
-            <!-- Crimson X Logo -->
-            <div class="flex justify-center mb-6">
-                <img src="{{ url_for('static', filename='crimson_x_logo.png') }}" alt="Crimson X" class="w-32 h-auto">
+    <div class="container">
+        <div class="glass-card">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <div class="logo-container">
+                    <img src="static/crimson_x_logo.png" alt="Crimson X" class="logo">
+                </div>
+                <div class="brand-text">
+                    <h1 class="brand-title">CrimsonX</h1>
+                    <p class="brand-subtitle">Advanced Biometric Analysis</p>
+                </div>
             </div>
 
-            <h1 class="text-4xl font-extrabold text-center text-gray-800 mb-6">🧬 Fingerprint Blood Group Prediction</h1>
+            <!-- Main Title -->
+            <div class="title-section">
+                <div class="title-icon">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+                <h2 class="main-title">Fingerprint Blood Group Prediction</h2>
+                <p class="main-subtitle">Upload your fingerprint image for AI-powered blood type analysis</p>
+            </div>
 
-            <!-- Form -->
-            <form action="/predict" method="post" enctype="multipart/form-data" class="space-y-4">
-                <div class="flex justify-center">
-                    <input type="file" name="image" accept="image/*" required class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-pink-500 focus:border-pink-500">
+            <!-- Upload Form -->
+            <form action="/predict" method="post" enctype="multipart/form-data" class="upload-form">
+                <div class="upload-section">
+                    <div class="file-input-wrapper">
+                        <input type="file" name="image" accept="image/*" required class="file-input" id="imageInput">
+                        <label for="imageInput" class="file-input-label">
+                            <div class="upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="upload-text">
+                                <span class="upload-main-text">Choose fingerprint image</span>
+                                <span class="upload-sub-text">or drag and drop here</span>
+                            </div>
+                        </label>
+                        <div class="file-info" id="fileInfo"></div>
+                    </div>
                 </div>
-                <div class="flex justify-center">
-                    <button type="submit" class="w-full py-3 px-6 bg-pink-500 text-white text-lg font-semibold rounded-lg hover:bg-pink-600 transition-colors">Predict</button>
-                </div>
+
+                <button type="submit" class="predict-btn">
+                    <span class="btn-text">
+                        <i class="fas fa-dna"></i>
+                        Analyze & Predict
+                    </span>
+                    <div class="btn-loading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Analyzing...
+                    </div>
+                </button>
             </form>
 
             <!-- Prediction Result -->
             {% if prediction %}
-            <div class="mt-6 text-center">
-                <h2 class="text-2xl font-semibold text-gray-800">Prediction: {{ prediction }}</h2>
-                {% if confidence %}
-                <h3 class="text-xl text-gray-600 mt-2">Confidence: {{ confidence }}%</h3>
-                {% endif %}
+            <div class="result-section">
+                <div class="result-card">
+                    <div class="result-icon">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="result-content">
+                        <h3 class="result-title">Prediction Complete</h3>
+                        <div class="result-value">
+                            <span class="blood-type">{{ prediction }}</span>
+                        </div>
+                        {% if confidence %}
+                        <div class="confidence-section">
+                            <div class="confidence-label">Confidence Level</div>
+                            <div class="confidence-bar">
+                                <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                                <span class="confidence-text">{{ confidence }}%</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             {% endif %}
+
+            <!-- Features -->
+            <div class="features-section">
+                <div class="feature-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure Analysis</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-brain"></i>
+                    <span>AI Powered</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Instant Results</span>
+                </div>
+            </div>
         </div>
     </div>
 
+    <script>
+        // File input handling
+        const fileInput = document.getElementById('imageInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const form = document.querySelector('.upload-form');
+        const predictBtn = document.querySelector('.predict-btn');
+
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                fileInfo.innerHTML = `
+                    <div class="selected-file">
+                        <i class="fas fa-image"></i>
+                        <span>${file.name}</span>
+                        <small>(${(file.size / 1024).toFixed(1)} KB)</small>
+                    </div>
+                `;
+                fileInfo.style.display = 'block';
+            }
+        });
+
+        // Form submission handling
+        form.addEventListener('submit', function() {
+            predictBtn.classList.add('loading');
+        });
+
+        // Drag and drop functionality
+        const fileInputLabel = document.querySelector('.file-input-label');
+
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            fileInputLabel.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            fileInputLabel.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            fileInputLabel.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            fileInputLabel.classList.add('drag-over');
+        }
+
+        function unhighlight(e) {
+            fileInputLabel.classList.remove('drag-over');
+        }
+
+        fileInputLabel.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            fileInput.files = files;
+            
+            const event = new Event('change', { bubbles: true });
+            fileInput.dispatchEvent(event);
+        }
+    </script>
 </body>
 
 </html>
