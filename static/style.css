@@ -717,3 +717,55 @@ body {
     outline: 2px solid rgba(239, 68, 68, 0.8);
     outline-offset: 2px;
 }
+
+/* Confusion Matrix Card */
+.confusion-matrix-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    margin: 32px 0 0 0;
+    padding: 24px;
+    box-shadow: var(--shadow-light);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: slideUp 0.8s;
+}
+
+.confusion-title {
+    color: var(--text-primary);
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.confusion-img-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.confusion-matrix-img {
+    max-width: 350px;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 2px 16px rgba(100,100,100,0.15);
+    border: 1px solid var(--glass-border);
+    background: rgba(255,255,255,0.07);
+}
+
+/* Responsive for mobile */
+@media (max-width: 640px) {
+    .confusion-matrix-img {
+        max-width: 100%;
+        border-radius: 8px;
+    }
+    .confusion-matrix-card {
+        padding: 16px;
+    }
+}
