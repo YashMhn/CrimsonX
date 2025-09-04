@@ -102,22 +102,47 @@
                 </button>
             </form>
 
-            <!-- Prediction Result -->
-            {% if prediction %}
-            <div class="result-section">
-                <div class="result-card">
-                    <div class="result-icon">
-                        <i class="fas fa-check-circle"></i>
-                    </div>
-                    <div class="result-content">
-                        <h3 class="result-title">Prediction Complete</h3>
-                        <div class="result-value">
-                            <span class="blood-type">{{ prediction }}</span>
-                        </div>
-                    </div>
+            <!-- ...rest of your HTML above... -->
+
+<!-- Prediction Result -->
+{% if prediction %}
+<div class="result-section">
+    <div class="result-card">
+        <div class="result-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="result-content">
+            <h3 class="result-title">Prediction Complete</h3>
+            <div class="result-value">
+                <span class="blood-type">{{ prediction }}</span>
+            </div>
+            {% if confidence %}
+            <div class="confidence-section">
+                <div class="confidence-label">Confidence Level</div>
+                <div class="confidence-bar">
+                    <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                    <span class="confidence-text">{{ confidence }}%</span>
                 </div>
             </div>
             {% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Confusion Matrix Image Card -->
+<div class="confusion-matrix-card">
+    <h4 class="confusion-title">
+        <i class="fas fa-th"></i>
+        Model Confusion Matrix
+    </h4>
+    <div class="confusion-img-wrapper">
+        <img src="static/confusion_matrix.png" 
+             alt="Confusion Matrix" class="confusion-matrix-img" />
+    </div>
+</div>
+
+<!-- ...rest of your HTML below... -->
 
             <!-- Features -->
             <div class="features-section">
