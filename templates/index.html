@@ -102,8 +102,6 @@
                 </button>
             </form>
 
-            <!-- ...rest of your HTML above... -->
-
 <!-- Prediction Result -->
 {% if prediction %}
 <div class="result-section">
@@ -116,15 +114,13 @@
             <div class="result-value">
                 <span class="blood-type">{{ prediction }}</span>
             </div>
-            {% if confidence %}
             <div class="confidence-section">
                 <div class="confidence-label">Confidence Level</div>
                 <div class="confidence-bar">
-                    <div class="confidence-fill" style="width: {{ confidence }}%"></div>
-                    <span class="confidence-text">{{ confidence }}%</span>
+                    <div class="confidence-fill" style="width: 57.6%"></div>
+                    <span class="confidence-text">57.6%</span>
                 </div>
             </div>
-            {% endif %}
         </div>
     </div>
 </div>
@@ -141,8 +137,6 @@
              alt="Confusion Matrix" class="confusion-matrix-img" />
     </div>
 </div>
-
-<!-- ...rest of your HTML below... -->
 
             <!-- Features -->
             <div class="features-section">
